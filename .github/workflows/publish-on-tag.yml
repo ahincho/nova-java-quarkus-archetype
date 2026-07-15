@@ -38,28 +38,15 @@ jobs:
         with:
           java-version: '25'
           build-tool: maven
-
-      - name: Configure Maven settings.xml for GitHub Packages
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml <<EOF
-          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
-            <servers>
-              <server>
-                <id>github</id>
-                <username>${GITHUB_ACTOR}</username>
-                <password>${GITHUB_TOKEN}</password>
-              </server>
-            </servers>
-          </settings>
-          EOF
+          # NOVA_RELEASE_PAT is a Personal Access Token with packages:read
+          # across all repos in the org (GITHUB_TOKEN can only read
+          # packages from its own repo, which fails during parent-pom
+          # deploy when resolving cross-repo dependencies like
+          # nova-notifications-quarkus-extension).
+          packages-read-token: ${{ secrets.NOVA_RELEASE_PAT || secrets.NOVA_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Publish to GitHub Packages
-        run: mvn deploy -DskipTests
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NOVA_PACKAGES_READ_TOKEN: ${{ secrets.NOVA_PACKAGES_READ_TOKEN || secrets.NOVA_RELEASE_PAT || secrets.GITHUB_TOKEN }}
+        run: mvn deploy -DskipTests --no-transfer-progress
