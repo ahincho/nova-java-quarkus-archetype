@@ -39,14 +39,29 @@ jobs:
           java-version: '25'
           build-tool: maven
           # NOVA_RELEASE_PAT is a Personal Access Token with packages:read
-          # across all repos in the org (GITHUB_TOKEN can only read
-          # packages from its own repo, which fails during parent-pom
-          # deploy when resolving cross-repo dependencies like
-          # nova-notifications-quarkus-extension).
+          # across the org (GITHUB_TOKEN can only read packages from its
+          # OWN repo, which fails during parent-pom deploy when resolving
+          # cross-repo dependencies like nova-notifications-quarkus-extension).
           packages-read-token: ${{ secrets.NOVA_RELEASE_PAT || secrets.NOVA_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - name: Publish to GitHub Packages
+      - name: Append github server to settings.xml for deployment
+        # setup-java configures nova-packages-read-bom / nova-packages-read-starter
+        # servers (for resolving cross-repo dependencies). Maven deployment
+        # still needs a separate "github" server (server id matched against the
+        # <distributionManagement><repository><id> in the POM). We append it
+        # here WITHOUT overwriting setup-java's cross-repo credentials.
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat >> ~/.m2/settings.xml <<EOF
+              <server>
+                <id>github</id>
+                <username>${GITHUB_ACTOR}</username>
+                <password>${GITHUB_TOKEN}</password>
+              </server>
+          EOF
+          echo "settings.xml now has 3 servers: nova-packages-read-bom, nova-packages-read-starter, github"
+
+      - name: Publish to GitHub Packages
         run: mvn deploy -DskipTests --no-transfer-progress
