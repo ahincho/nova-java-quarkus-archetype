@@ -1,0 +1,30 @@
+# Multi-stage Dockerfile for native compilation (GraalVM).
+# Build with:
+#   docker buildx build --platform linux/amd64 -f Dockerfile.native \
+#       -t ${artifactId}:1.0.0 .
+
+# Stage 1: build the native binary
+FROM quay.io/quarkus/quarkus-micro-image:2.0 AS build
+WORKDIR /workspace
+
+# Copy the whole multi-module project
+COPY . .
+
+# Build the native runner for the boot module
+RUN ./mvnw -B -ntp -pl boot -am clean package \
+        -DskipTests \
+        -Dnative \
+        -Dquarkus.native.container-build=true \
+ && cp boot/target/*-runner /workspace/application
+
+# Stage 2: minimal runtime image (no JVM, just the native binary)
+FROM quay.io/quarkus/quarkus-micro-image:2.0
+WORKDIR /work/
+COPY --from=build /workspace/application /work/application
+RUN chmod 775 /work /work/application \
+ && chown -R 1001 /work \
+ && echo "securerandom.source=file:/dev/urandom" >> /work/application.properties
+
+EXPOSE 8080
+USER 1001
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]

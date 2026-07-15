@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor
+        xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0
+        https://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd"
+        name="nova-quarkus-archetype">
+
+    <requiredProperties>
+        <requiredProperty key="groupId">
+            <defaultValue>com.example</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="artifactId">
+            <defaultValue>nova-microservice</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="version">
+            <defaultValue>1.0.0-SNAPSHOT</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="package">
+            <defaultValue>${groupId}</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="nova-parent-version">
+            <defaultValue>1.0.0</defaultValue>
+        </requiredProperty>
+    </requiredProperties>
+
+    <fileSets>
+        <!-- Top-level pom.xml + .gitignore + .dockerignore -->
+        <fileSet filtered="true" encoding="UTF-8">
+            <directory/>
+            <includes>
+                <include>pom.xml</include>
+                <include>.gitignore</include>
+                <include>.dockerignore</include>
+                <include>README.md</include>
+            </includes>
+        </fileSet>
+
+        <!-- shared/ module -->
+        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+            <directory>shared</directory>
+            <includes>
+                <include>**/pom.xml</include>
+                <include>**/*.java</include>
+            </includes>
+        </fileSet>
+
+        <!-- product/ module -->
+        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+            <directory>product</directory>
+            <includes>
+                <include>**/pom.xml</include>
+                <include>**/*.java</include>
+                <include>**/*.properties</include>
+            </includes>
+        </fileSet>
+
+        <!-- boot/ module (Quarkus entry-point) -->
+        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+            <directory>boot</directory>
+            <includes>
+                <include>**/pom.xml</include>
+                <include>**/*.java</include>
+                <include>**/*.properties</include>
+                <include>Dockerfile.jvm</include>
+                <include>Dockerfile.native</include>
+            </includes>
+        </fileSet>
+
+        <!-- boot/ src/main/resources (unpackaged) -->
+        <fileSet filtered="true" encoding="UTF-8">
+            <directory>boot/src/main/resources</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>**/*.java</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+
+</archetype-descriptor>

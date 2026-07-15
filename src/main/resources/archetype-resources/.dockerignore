@@ -1,0 +1,13 @@
+# Quarkus build outputs
+target/
+**/target/
+# Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+# IDE
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+.factorypath

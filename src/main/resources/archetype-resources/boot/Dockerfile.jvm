@@ -1,0 +1,39 @@
+# Stage 1: build the application
+FROM eclipse-temurin:25-jdk-alpine AS build
+WORKDIR /workspace
+
+# Copy the whole multi-module project (parent + shared + product + boot)
+COPY . .
+
+# Build only the boot module (with its transitive deps) and produce
+# both the fast-jar (default) and the runner.
+RUN ./mvnw -B -ntp -pl boot -am clean package \
+        -DskipTests \
+ && cp boot/target/quarkus-app/quarkus-run.jar /workspace/quarkus-run.jar \
+ && cp -r boot/target/quarkus-app/lib /workspace/lib \
+ && cp -r boot/target/quarkus-app/app /workspace/app \
+ && cp -r boot/target/quarkus-app/quarkus /workspace/quarkus
+
+# Stage 2: minimal runtime image
+FROM eclipse-temurin:25-jre-alpine
+RUN apk add --no-cache tini && addgroup -S nova && adduser -S nova -G nova -u 1001
+WORKDIR /deploy
+COPY --from=build --chown=nova:nova /workspace/quarkus-run.jar /deploy/quarkus-run.jar
+COPY --from=build --chown=nova:nova /workspace/lib            /deploy/lib
+COPY --from=build --chown=nova:nova /workspace/app            /deploy/app
+COPY --from=build --chown=nova:nova /workspace/quarkus        /deploy/quarkus
+
+USER 1001
+EXPOSE 8080
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
+ENV JAVA_APP_JAR="/deploy/quarkus-run.jar"
+ENTRYPOINT ["/sbin/tini", "--", "sh", "-c", "exec java $JAVA_OPTS -jar $JAVA_APP_JAR"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD wget --quiet --spider --tries=1 http://127.0.0.1:8080/q/health || exit 1
+
+# OCI labels
+LABEL org.opencontainers.image.title="${artifactId}" \
+      org.opencontainers.image.description="Nova Platform Quarkus microservice instance" \
+      org.opencontainers.image.source="https://github.com/ahincho/nova-java-quarkus-archetype" \
+      org.opencontainers.image.licenses="UNLICENSED" \
+      org.opencontainers.image.vendor="ahincho"

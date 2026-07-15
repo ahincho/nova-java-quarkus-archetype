@@ -1,0 +1,20 @@
+name: CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    uses: ahincho/nova-devops/.github/workflows/reusable-build-maven.yml@main
+    secrets: inherit
+
+  publish-on-tag:
+    uses: ahincho/nova-devops/.github/workflows/reusable-publish-maven-on-tag.yml@main
+    secrets: inherit
