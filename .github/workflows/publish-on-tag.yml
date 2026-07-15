@@ -44,24 +44,44 @@ jobs:
           # cross-repo dependencies like nova-notifications-quarkus-extension).
           packages-read-token: ${{ secrets.NOVA_RELEASE_PAT || secrets.NOVA_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - name: Append github server to settings.xml for deployment
-        # setup-java configures nova-packages-read-bom / nova-packages-read-starter
-        # servers (for resolving cross-repo dependencies). Maven deployment
+      - name: Rewrite settings.xml with all 3 servers
+        # setup-java configures only the cross-repo READ servers
+        # (nova-packages-read-bom, nova-packages-read-starter). Maven deployment
         # still needs a separate "github" server (server id matched against the
-        # <distributionManagement><repository><id> in the POM). We append it
-        # here WITHOUT overwriting setup-java's cross-repo credentials.
+        # <distributionManagement><repository><id> in the POM). We rewrite the
+        # whole settings.xml here with all three servers to avoid XML malformation
+        # from appending outside the </servers> block.
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EFFECTIVE_READ_TOKEN: ${{ secrets.NOVA_RELEASE_PAT || secrets.NOVA_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          cat >> ~/.m2/settings.xml <<EOF
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                        https://maven.apache.org/xsd/settings-1.0.0.xsd">
+            <servers>
+              <server>
+                <id>nova-packages-read-bom</id>
+                <username>${GITHUB_ACTOR}</username>
+                <password>${EFFECTIVE_READ_TOKEN}</password>
+              </server>
+              <server>
+                <id>nova-packages-read-starter</id>
+                <username>${GITHUB_ACTOR}</username>
+                <password>${EFFECTIVE_READ_TOKEN}</password>
+              </server>
               <server>
                 <id>github</id>
                 <username>${GITHUB_ACTOR}</username>
                 <password>${GITHUB_TOKEN}</password>
               </server>
+            </servers>
+          </settings>
           EOF
-          echo "settings.xml now has 3 servers: nova-packages-read-bom, nova-packages-read-starter, github"
+          echo "settings.xml rewritten with 3 servers: nova-packages-read-bom, nova-packages-read-starter, github"
 
       - name: Publish to GitHub Packages
         run: mvn deploy -DskipTests --no-transfer-progress
