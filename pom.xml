@@ -10,7 +10,7 @@
     <packaging>maven-archetype</packaging>
 
     <name>Nova Platform Quarkus Archetype</name>
-    <description>Maven archetype for generating Nova Platform Quarkus microservice instances. Produces a multi-module (boot/product/shared) project on Java 25 + Quarkus 3.33.2.1 LTS, with the nova-notifications-quarkus-extension adapter pre-wired.</description>
+    <description>Maven archetype for generating Nova Platform Quarkus microservice instances. Produces a multi-module (boot/product/shared) project on Java 25 + Quarkus 3.33.2.1 LTS.</description>
 
     <build>
         <extensions>

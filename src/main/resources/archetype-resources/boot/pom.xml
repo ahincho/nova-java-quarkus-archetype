@@ -52,7 +52,6 @@
             <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
 
-        <!-- Nova Platform notifications adapter (inherited from parent) -->
         <!-- Tests -->
         <dependency>
             <groupId>io.quarkus</groupId>

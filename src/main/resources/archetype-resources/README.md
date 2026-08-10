@@ -6,7 +6,6 @@ Maven archetype.
 
 - **Stack**: Java 25 + Quarkus 3.33.2.1 LTS
 - **Parent**: `pe.edu.nova.java:nova-quarkus-parent:${nova-parent-version}`
-- **Notifications**: `pe.edu.nova.java.starters:nova-notifications-quarkus-extension:1.1.2` (pre-included)
 
 ## Modules
 
@@ -60,16 +59,9 @@ curl http://localhost:8080/q/health
 ```properties
 quarkus.http.port=8080
 quarkus.http.test-port=8081
-
-# Nova Platform notifications — wired by the extension
-nova.notifications.enabled=true
-nova.notifications.email.provider=sendgrid
-nova.notifications.email.api-key=${SENDGRID_API_KEY:test-api-key-local}
-nova.notifications.email.default-sender=no-reply@example.com
-nova.notifications.resilience.max-attempts=1
 ```
 
-Override at runtime with environment variables: `SENDGRID_API_KEY`, `QUARKUS_HTTP_PORT`, etc.
+Override at runtime with environment variables: `QUARKUS_HTTP_PORT`, etc.
 
 ## Docker
 

@@ -41,7 +41,7 @@ jobs:
           # NOVA_RELEASE_PAT is a Personal Access Token with packages:read
           # across the org (GITHUB_TOKEN can only read packages from its
           # OWN repo, which fails during parent-pom deploy when resolving
-          # cross-repo dependencies like nova-notifications-quarkus-extension).
+          # cross-repo Nova dependencies).
           packages-read-token: ${{ secrets.NOVA_RELEASE_PAT || secrets.NOVA_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Rewrite settings.xml with all 3 servers

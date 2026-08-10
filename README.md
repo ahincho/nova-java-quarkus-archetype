@@ -1,9 +1,7 @@
 # nova-java-quarkus-archetype
 
 Nova Platform Quarkus Maven archetype. Generates a multi-module
-microservice instance (Java 25 + Quarkus 3.33.2.1 LTS) with the
-[`nova-notifications-quarkus-extension`](https://github.com/ahincho/nova-java-notifications-quarkus-extension)
-adapter pre-wired.
+microservice instance (Java 25 + Quarkus 3.33.2.1 LTS).
 
 This is the Quarkus counterpart of
 [`ahincho/nova-java-spring-boot-archetype`](https://github.com/ahincho/nova-java-spring-boot-archetype):
@@ -15,7 +13,7 @@ same role, same consumption pattern (`mvn archetype:generate`), same
 | Artefact | Purpose |
 |---|---|
 | `pe.edu.nova.java:nova-quarkus-archetype` | The Maven archetype (this repo). `<packaging>maven-archetype</packaging>`. Consumed via `mvn archetype:generate`. |
-| `pe.edu.nova.java:nova-quarkus-parent` | The parent POM. Centralizes Java 25, Quarkus 3.33.2.1 LTS, Maven plugins, BOM import, and the notifications extension. |
+| `pe.edu.nova.java:nova-quarkus-parent` | The parent POM. Centralizes Java 25, Quarkus 3.33.2.1 LTS, Maven plugins, and BOM import. |
 | The generated instance | A multi-module Maven project that declares `<parent>nova-quarkus-parent</parent>` and contains 3 modules: `shared`, `product`, `boot`. |
 
 ## Generated project structure
@@ -55,7 +53,7 @@ same role, same consumption pattern (`mvn archetype:generate`), same
         │       ├── ProductResource.java
         │       └── DomainExceptionMapper.java
         └── main/resources/application.properties
-                            (nova.notifications.* + quarkus.http.* + openapi + logging)
+                            (quarkus.http.* + openapi + logging)
 ```
 
 ## How to generate a new instance
@@ -90,9 +88,9 @@ cd ms-catalog
 
 ## Versioning
 
-- `1.0.0` — initial release aligned with `nova-java-notifications-quarkus-extension:1.1.2` and `nova-java-quarkus-parent:1.0.0`.
+- `1.0.0` — initial release aligned with `nova-java-quarkus-parent:1.0.0`.
 - Java 25 toolchain.
-- Quarkus 3.33.2.1 LTS (the Nova canonical LTS branch; the rest of Nova still tracks 3.37.x for some non-notifications extensions, and a global migration is in the meta-framework backlog).
+- Quarkus 3.33.2.1 LTS (the Nova canonical LTS branch; the rest of Nova still tracks 3.37.x for some extensions, and a global migration is in the meta-framework backlog).
 
 ## Distribution
 
@@ -104,7 +102,6 @@ Published to GitHub Packages as
 
 - [`nova-java-quarkus-parent`](https://github.com/ahincho/nova-java-quarkus-parent) — the parent POM that the generated instance inherits from.
 - [`nova-java-spring-boot-archetype`](https://github.com/ahincho/nova-java-spring-boot-archetype) — the Spring Boot counterpart.
-- [`nova-java-notifications-quarkus-extension`](https://github.com/ahincho/nova-java-notifications-quarkus-extension) — the notifications adapter pre-included in the parent.
 
 ---
 
