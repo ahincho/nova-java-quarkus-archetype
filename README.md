@@ -125,3 +125,9 @@ The artifacts shipped here are **not "AI systems"** under EU AI Act
 Article 3(1) (a deterministic Java library does not "infer" outputs).
 The disclosure is made voluntarily, aligned with the spirit of the EU
 AI Act and UNESCO Principle 6.
+
+## License
+
+Eclipse Public License 2.0 — see [LICENSE](LICENSE).
+
+Copyright © 2026 Angel Hincho.
